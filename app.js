@@ -24,11 +24,13 @@ app.use(flash());
 
 app.use(express.favicon());
 app.use(express.logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
+// app.use(express.json());
+// app.use(express.urlencoded());
+// app.use(express.bodyParser())
+app.use(express.bodyParser({keepExtensions: true, uploadDir: './public/images'})); // 保留文件的后缀名，设置上传目录
+app.use(express.methodOverride()); // connect内建中间件，可以协助处理post请求
 
-app.use(express.cookieParser());
+app.use(express.cookieParser()); 
 app.use(express.session({
 	secret: settings.cookieSecret,
 	key: settings.db,
