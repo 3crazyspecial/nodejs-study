@@ -2,7 +2,9 @@
 /**
  * Module dependencies.
  */
-
+var fs = require('fs');
+var accessLog = fs.createWriteStream('access.log', {flag: 'a'});
+var errorLog = fs.createWriteStream('error.log', {flag: 'a'});
 var express = require('express');
 var routes = require('./routes');
 var http = require('http');
@@ -23,7 +25,8 @@ app.set('view engine', 'ejs');
 app.use(flash());
 
 app.use(express.favicon());
-app.use(express.logger('dev'));
+// app.use(express.logger('dev'));
+app.use(express.logger({stream: accessLog}));
 // app.use(express.json());
 // app.use(express.urlencoded());
 // app.use(express.bodyParser())
@@ -43,6 +46,10 @@ app.use(express.session({
 
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(function(err, req, res, next) {
+	var meta = '[' + new Date() + ']' + req.url + '\n';
+	errorLog.write(meta + err.stack + '\n');
+})
 
 // development only
 if ('development' == app.get('env')) {
